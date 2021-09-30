@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for recipe in posts %}
+        <article class="media content-section">
+            <div class="media-body">
+              <div class="article-metadata">
+                <a class="mr-2" href="#">{{ recipe.recipe }}</a>
+                <small class="text-muted">{{ recipe.original }}</small>
+              </div>
+              <h2><a class="article-title" href="#">{{ recipe.level }}</a></h2>
+              <p class="article-content">{{ recipe.serves }}</p>
+            </div>
+          </article>
+    {% endfor %}
+{% endblock content %}
