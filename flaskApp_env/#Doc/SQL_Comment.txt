@@ -1,0 +1,4 @@
+SQL 建立foreign key:
+https://www.w3schools.com/sql/sql_foreignkey.asp
+手動建立foreign key
+https://www.itread01.com/p/1400725.html

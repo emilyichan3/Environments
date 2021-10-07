@@ -1,35 +1,22 @@
 import os
 import secrets
 from PIL import Image #pip install Pillow
-from flask import flash, redirect, render_template, url_for, request
+from flask import flash, redirect, render_template, url_for, request, abort
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskapp_env import app, db, bcrypt
-from flaskapp_env.forms import RegistrationForm, LoginForm, UpdateAccountForm
-from flaskapp_env.modules import User, Post
-
-recipes = [
-    {
-        'recipe':'Baileys Cream Cheese Cake',
-        'original':'Ireland',
-        'level': 'Easy',
-        'serves':4
-    },
-    {
-        'recipe':'Roll Cake',
-        'original':'Japan',
-        'level': 'Easy',
-        'serves':4
-    }
-]
+from flaskapp_env.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
+from flaskapp_env.modules import Member, Post
 
 @app.route('/')
 @app.route('/home')
 def home():
-    return render_template('home.html', posts=recipes)
+    posts = Post.query.all()
+    return render_template('home.html', posts=posts)
 
 @app.route('/about')
 def about():
     return render_template('about.html', title='About')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -38,8 +25,8 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(user)
+        member = Member(username=form.username.data, email=form.email.data, password=hashed_password)
+        db.session.add(member)
         db.session.commit()
 
         flash('Your account has been created! You are now able to login!', 'success')
@@ -50,9 +37,9 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
+        member = Member.query.filter_by(email=form.email.data).first()
+        if member and bcrypt.check_password_hash(member.password, form.password.data):
+            login_user(member, remember=form.remember.data)
              #argus is dictionary
              #為了確保如果在link上面沒有next字樣，若使用key去尋找時會出錯
              #所以使用get來搜尋，找不到next時就會回傳null
@@ -102,3 +89,53 @@ def account():
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form)
+
+@app.route('/post/new', methods=['GET', 'POST'])
+@login_required
+def new_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(title=form.title.data, post_content=form.post_content.data,author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post has been created!','success')
+        return redirect(url_for('home'))
+    return render_template('create_post.html', title='New Post', 
+                        form=form, legend='New Post')
+
+@app.route('/post/<int:post_id>')
+def post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('post.html', title=post.title, post=post)
+
+@app.route('/post/<int:post_id>/update', methods=['GET', 'POST'])
+@login_required
+def update_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.author != current_user:
+        abort(403)
+    form = PostForm()
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.post_content = form.post_content.data
+        db.session.commit()
+        flash('Your post has been updated!','success')
+        return redirect(url_for('post', post_id=post.id))
+    elif request.method =='GET':
+        form.title.data = post.title
+        form.post_content.data = post.post_content
+    return render_template('create_post.html', title='Update Post', 
+                        form=form, legend='Update Post')
+ 
+@app.route('/post/<int:post_id>/delete', methods=['GET', 'POST'])
+@login_required
+#refer. <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST">
+def delete_post(post_id): 
+    post = Post.query.get_or_404(post_id)
+    if post.author != current_user:
+        abort(403)
+    db.session.delete(post)
+    db.session.commit()
+    flash('Your post has been deleted!','success')
+    return redirect(url_for('home'))
+        

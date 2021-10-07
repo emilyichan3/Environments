@@ -1,0 +1,4 @@
+Bootstrap 呼叫刪除視窗
+https://getbootstrap.com/docs/4.0/components/modal/#live-demo
+
+https://www.bootstrapcdn.com/
