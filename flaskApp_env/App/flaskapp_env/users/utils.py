@@ -32,3 +32,15 @@ def send_reset_email(user):
 If you did not make this request then simply ignor this email and no changes will be made.
 '''
     mail.send(msg)
+
+def send_account_verification(user):
+    token = user.get_activate_token()
+    msg = Message('Account verification Request', 
+                sender='noreply@demo.com', 
+                recipients=[user.email])
+    msg.body = f'''If you want to activate account in CookLab.com, click the following link:
+{url_for('users.activate_account',token=token, _external=True)}
+
+If you did not make this request then simply ignor this email and no changes will be made.
+'''
+    mail.send(msg)

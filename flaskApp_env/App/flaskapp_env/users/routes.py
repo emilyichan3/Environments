@@ -1,10 +1,10 @@
 from flask import flash, redirect, render_template, url_for, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskapp_env import  db, bcrypt
-from flaskapp_env.modules import Member, Post
+from flaskapp_env.modules import Member, Post, Country
 from flaskapp_env.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm
-                        , RequestResetForm, ResetPasswordForm)
-from flaskapp_env.users.utils import save_picture, send_reset_email
+                        , RequestResetForm, ResetPasswordForm, AccountVerifiForm)
+from flaskapp_env.users.utils import save_picture, send_reset_email, send_account_verification
 
 users = Blueprint('users', __name__)
 
@@ -13,21 +13,32 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = RegistrationForm()
+    
+    countries=db.session.query(Country).all()
+    form.country.choices = [(i.Code, i.Name) for i in countries]
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        member = Member(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(member)
-        db.session.commit()
-
-        flash('Your account has been created! You are now able to login!', 'success')
+        member = Member(username=form.username.data, email=form.email.data, password=hashed_password, country_code=form.country.data)
+        user = Member.query.filter_by(email=form.email.data).first()
+        if user is None:
+            db.session.add(member)
+            db.session.commit()
+        
+        #Send Account Verification
+        user = Member.query.filter_by(email=form.email.data).first()
+        send_account_verification(user)
+        flash('An email has been sent with account verification to activate your account.', 'info')
         return redirect(url_for('users.login'))
+
+        # flash('Your account has been created! You are now able to login!', 'success')
+        # return redirect(url_for('users.login'))
     return render_template('register.html', title='Register', form=form)
 
 @users.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        member = Member.query.filter_by(email=form.email.data).first()
+        member = Member.query.filter_by(email=form.email.data,activate=1).first()
         if member and bcrypt.check_password_hash(member.password, form.password.data):
             login_user(member, remember=form.remember.data)
              #argus is dictionary
@@ -48,12 +59,16 @@ def logout():
 @login_required
 def account():
     form = UpdateAccountForm()
+    countries=db.session.query(Country).all()
+    form.country.choices = [(i.Code, i.Name) for i in countries]
+
     if form.validate_on_submit():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
             current_user.image_file = picture_file
         current_user.username = form.username.data
         current_user.email = form.email.data
+        current_user.country_code = form.country.data
         db.session.commit()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('users.account'))
@@ -61,6 +76,7 @@ def account():
         form.username.data = current_user.username
         # form.XXXX 指label，內容的話要.data
         form.email.data = current_user.email
+        form.country.data = current_user.country_code
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form)
 
@@ -102,3 +118,18 @@ def reset_token(token):
         return redirect(url_for('users.login'))
     return render_template('reset_token.html', title='Reset Password',form=form)
 
+@users.route('/activate_account/<token>', methods=['GET', 'POST'])
+def activate_account(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+    user = Member.verify_reset_token(token)
+    if user is None:
+        flash('That is an invalid or expired link', 'warning')
+        return redirect(url_for('users.login'))
+    form = AccountVerifiForm()
+    if form.validate_on_submit():
+        user.activate = 1
+        db.session.commit()
+        flash('Your account has been activated! You are now able to login!', 'success')
+        return redirect(url_for('users.login'))
+    return render_template('activate_account.html', title='Submit Account Verification',form=form)

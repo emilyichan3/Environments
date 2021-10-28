@@ -16,11 +16,17 @@ class Member(db.Model, UserMixin):
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(60), nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
-
+    activate = db.Column(db.Integer, default=0)
+    country_code = db.Column(db.String(3), default='', nullable=False)
+    
     def get_reset_token(self, expires_sec=300): #5 mins
         s = Serializer(current_app.config['SECRET_KEY'],expires_sec)
         return s.dumps({'user_id': self.id}).decode('utf-8')
     
+    def get_activate_token(self, expires_sec=300): #5 mins
+        s = Serializer(current_app.config['SECRET_KEY'],expires_sec)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+
     @staticmethod
     def verify_reset_token(token):
         s = Serializer(current_app.config['SECRET_KEY'])
@@ -29,7 +35,6 @@ class Member(db.Model, UserMixin):
         except:
             return None
         return Member.query.get(user_id)
-
 
     def __repr__(self):
         return f"Member('{self.username}', '{self.email}', '{self.image_file}')"
@@ -44,3 +49,12 @@ class Post(db.Model):
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.date_posted}')"
+
+
+class Country(db.Model):
+    Code = db.Column(db.String(3), primary_key=True)
+    Name = db.Column(db.String(25), nullable=False)
+    NameEN = db.Column(db.String(20), nullable=False)
+
+    def __repr__(self):
+        return f"Country('{self.Code}', '{self.Name}')"

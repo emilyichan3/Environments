@@ -5,11 +5,11 @@ body {
   }
   
   h1, h2, h3, h4, h5, h6 {
-    color: #444444;
+    color: #0a0a0a;
   }
   
   .bg-steel {
-    background-color: #5f788a;
+    background-color: #1894aa;
   }
   
   .site-header .navbar-nav .nav-link {
@@ -33,7 +33,7 @@ body {
   }
   
   .article-title {
-    color: #444444;
+    color: #ca1111;
   }
   
   a.article-title:hover {

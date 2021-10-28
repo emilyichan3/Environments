@@ -61,7 +61,21 @@
                         {{ form.confirm_password(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
+                <div class="form-group">
+                    <div class="row"><label for="input_example">Nationality:</label></div>
+                    {{ form.country(class="select-control") }}
+
+                    
+                    <!-- <div class="col-6">
+                        <select class="form-control" id="input_example" name="user_input">
+                        <option selected value ="default">Male</option>
+                        <option value ="one">Female</option>
+                        <option value ="two">Other</option>
+                        </select>
+                    </div> -->
+                </div>
             </fieldset>
+            <p></p>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}
             </div>
