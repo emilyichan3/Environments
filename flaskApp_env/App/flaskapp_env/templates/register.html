@@ -62,20 +62,16 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    <div class="row"><label for="input_example">Nationality:</label></div>
-                    {{ form.country(class="select-control") }}
+                    {{ form.country_code.label(class="form-control-label") }}
 
-                    
-                    <!-- <div class="col-6">
-                        <select class="form-control" id="input_example" name="user_input">
-                        <option selected value ="default">Male</option>
-                        <option value ="one">Female</option>
-                        <option value ="two">Other</option>
-                        </select>
-                    </div> -->
+                    {{ form.country_code(class="form-select form-select-sm") }}
+                </div>
+                <div class="form-group">
+                    {{ form.membership_type.label(class="form-control-label") }}
+
+                    {{ form.membership_type(class="form-select form-select-sm") }}
                 </div>
             </fieldset>
-            <p></p>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}
             </div>

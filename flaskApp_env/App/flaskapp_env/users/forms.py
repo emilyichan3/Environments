@@ -15,7 +15,8 @@ class RegistrationForm(FlaskForm):
                         validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', 
                         validators=[DataRequired(), EqualTo('password')])
-    country = SelectField('Country:', validators=[DataRequired()], id='select_country')
+    country_code = SelectField('Nationality:', choices=[], validators=[DataRequired()], coerce=str)
+    membership_type = SelectField('Membership Type:', choices=[], validators=[DataRequired()], coerce=int)
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
@@ -42,7 +43,8 @@ class UpdateAccountForm(FlaskForm):
     email = StringField('Email', render_kw={'readonly': True} ,
                         validators=[DataRequired(), Email()])
     picture = FileField('Udate Profile Picture', validators=[FileAllowed(['jpg','png'])])
-    country = SelectField('Country:', validators=[DataRequired()], id='select_country')
+    country_code = SelectField('Nationality:', choices=[], validators=[DataRequired()], coerce=str)
+    membership_type = SelectField('Membership Type:', choices=[], validators=[DataRequired()], coerce=int)
     submit = SubmitField('Update')
 
     def validate_username(self, username):

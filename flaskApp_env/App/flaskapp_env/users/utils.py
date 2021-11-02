@@ -1,5 +1,7 @@
 import os
 import secrets
+import pandas as pd
+import csv
 from PIL import Image #pip install Pillow
 from flask_mail import Message
 from flask import url_for, current_app, render_template
@@ -52,3 +54,19 @@ def send_account_verification(user):
 If you did not make this request then simply ignor this email and no changes will be made.
 '''
     mail.send(msg)
+
+def upload_csv_file(uploaded_file):
+    upload_path = os.path.join(current_app.root_path, 'static\data_files', uploaded_file.filename)
+    # set the file path
+    uploaded_file.save(upload_path)
+    return upload_path
+
+def parseCSV(filePath):
+    # CVS Column Names
+    col_names = ['x1','x2','x3','x4']
+    # Use Pandas to parse the CSV file
+    csvData = pd.read_csv(filePath,names=col_names, header=None)
+    # Loop through the Rows
+    return csvData
+#   for i,row in csvData.iterrows():
+#       print(i,row['x1'],row['x2'],row['x3'],row['x4'])

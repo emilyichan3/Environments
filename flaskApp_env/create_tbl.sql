@@ -16,6 +16,9 @@ CREATE TABLE [dbo].[Member](
 	[image_file] [varchar](20) NOT NULL,
 	[password] [varchar](60) NOT NULL,
 	[activate] [int] NOT NULL,
+	[country_code] [varchar](3) NOT NULL,
+	[join_date] DATETIME NOT NULL,
+	[membership_type] [int] NOT NULL,
  CONSTRAINT [PK_Member_1] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -46,6 +49,18 @@ CREATE TABLE [dbo].[Country](
  CONSTRAINT [PK_Province] PRIMARY KEY CLUSTERED 
 (
 	[Code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+CREATE TABLE [dbo].[Membership](
+	[ID] [int] NOT NULL,
+	[Membership_Code] [nvarchar](20) NULL,
+	[Membership_Name] [nvarchar](50) NULL,
+ CONSTRAINT [PK_Membership] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO

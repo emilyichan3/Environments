@@ -1,10 +1,14 @@
+import pandas as pd
+import csv
+from datetime import date
 from flask import flash, redirect, render_template, url_for, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskapp_env import  db, bcrypt
-from flaskapp_env.modules import Member, Post, Country
+from flaskapp_env.modules import Member, Post, Country, Membership
 from flaskapp_env.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm
                         , RequestResetForm, ResetPasswordForm, AccountVerifiForm)
-from flaskapp_env.users.utils import save_picture, send_reset_email, send_account_verification
+from flaskapp_env.users.utils import (save_picture, send_reset_email, send_account_verification
+                        , upload_csv_file, parseCSV)
 
 users = Blueprint('users', __name__)
 
@@ -13,12 +17,14 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = RegistrationForm()
-    
     countries=db.session.query(Country).all()
-    form.country.choices = [(i.Code, i.Name) for i in countries]
+    form.country_code.choices = [(i.Code, i.Name) for i in countries]  
+    membership_type=db.session.query(Membership).all()
+    form.membership_type.choices = [(i.id, i.Membership_Name) for i in membership_type]  
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        member = Member(username=form.username.data, email=form.email.data, password=hashed_password, country_code=form.country.data)
+        member = Member(username=form.username.data, email=form.email.data, password=hashed_password, 
+                        country_code=form.country_code.data, membership_type=form.membership_type.data)
         user = Member.query.filter_by(email=form.email.data).first()
         if user is None:
             db.session.add(member)
@@ -29,9 +35,6 @@ def register():
         send_account_verification(user)
         flash('An email has been sent with account verification to activate your account.', 'info')
         return redirect(url_for('users.login'))
-
-        # flash('Your account has been created! You are now able to login!', 'success')
-        # return redirect(url_for('users.login'))
     return render_template('register.html', title='Register', form=form)
 
 @users.route('/login', methods=['GET', 'POST'])
@@ -58,9 +61,11 @@ def logout():
 @users.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
-    form = UpdateAccountForm()
     countries=db.session.query(Country).all()
-    form.country.choices = [(i.Code, i.Name) for i in countries]
+    membership_type=db.session.query(Membership).all()
+    form = UpdateAccountForm()
+    form.country_code.choices = [(i.Code, i.Name) for i in countries]
+    form.membership_type.choices = [(i.id, i.Membership_Name) for i in membership_type]  
 
     if form.validate_on_submit():
         if form.picture.data:
@@ -68,7 +73,8 @@ def account():
             current_user.image_file = picture_file
         current_user.username = form.username.data
         current_user.email = form.email.data
-        current_user.country_code = form.country.data
+        current_user.country_code = form.country_code.data
+        current_user.membership_type = form.membership_type.data
         db.session.commit()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('users.account'))
@@ -76,7 +82,8 @@ def account():
         form.username.data = current_user.username
         # form.XXXX 指label，內容的話要.data
         form.email.data = current_user.email
-        form.country.data = current_user.country_code
+        form.country_code.data = current_user.country_code
+        form.membership_type.data = current_user.membership_type
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form)
 
@@ -133,3 +140,21 @@ def activate_account(token):
         flash('Your account has been activated! You are now able to login!', 'success')
         return redirect(url_for('users.login'))
     return render_template('activate_account.html', title='Submit Account Verification',form=form)
+
+
+@users.route("/upload", methods=['GET', 'POST'])
+def upload():
+    return render_template('csv_upload.html')
+
+@users.route("/data", methods=['GET', 'POST'])
+def data():
+      # get the uploaded file
+    uploaded_file = request.files['file']
+    if request.method == 'POST':
+        f = upload_csv_file(uploaded_file)
+        data = parseCSV(f)  
+        # with open(f) as file:
+        #     csvfile = csv.reader(file)
+        #     for row in csvfile:
+        #         data.append(row)
+    return render_template('data.html', data=data)

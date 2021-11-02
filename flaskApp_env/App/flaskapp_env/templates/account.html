@@ -50,12 +50,25 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ form.country.label() }}
-                    {{ form.country(class="form-control-file") }}
-                    {% if form.country.errors %}
-                        {% for error in form.country.errors %}
+                    {{ form.country_code.label(class="form-control-label") }}
+                   
+                    {% if form.country_code.errors %}
+                        {% for error in form.country_code.errors %}
                             <span class="text-danger">{{ error }}</span></br>
                         {% endfor %}
+                    {% else %}
+                        {{ form.country_code(class="form-select form-select-sm") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.membership_type.label(class="form-control-label") }}
+
+                    {% if form.membership_type.errors %}
+                        {% for error in form.membership_type.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% else %}
+                        {{ form.membership_type(class="form-select form-select-sm") }}
                     {% endif %}
                 </div>
             </fieldset>

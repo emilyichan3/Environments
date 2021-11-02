@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="form-group">
+        {% for i, row in data.iterrows() %}
+            {% if i>0 %}:
+                <span>row: {{ i }} column: {{ row['x1'] }} {{ row['x2'] }} {{ row['x3'] }} {{ row['x4'] }}</span><br>
+            {% else %}
+                <span>importing...</span><br>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock content %}
+
