@@ -1,16 +1,23 @@
 {% extends "layout.html" %}
 {% block content %}
-  <!doctype html>
-  <html>
-    <head>
-      <title>FLASK CSV File Upload</title>
-    </head>
-    <body>
-      <h1>Upload your CSV file</h1>
-      <form class="" method="POST" action="data" enctype="multipart/form-data">
-        <!-- <p><input type="file" name="file" value=""></p>
-        <p><input type="submit" name="" value="Submit"></p> -->
-      </form>
-    </body>
-  </html>
+  <div class="content-section">
+    <form method="POST" action="" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+      <fieldset class="form-group">
+        <legend class="border-bottom mb-4">FLASK CSV File Upload</legend>
+        <div class="form-group">
+          {{ form.csvfile.label() }}
+          {{ form.csvfile(class="form-control-file") }}
+          {% if form.csvfile.errors %}
+              {% for error in form.csvfile.errors %}
+                  <span class="text-danger">{{ error }}</span></br>
+              {% endfor %}
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ form.upload(class="btn btn-outline-info") }}
+        </div>
+      </fieldset>
+    </form>
+</div>
 {% endblock content %}

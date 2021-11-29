@@ -1,13 +1,24 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="form-group">
-        {% for i, row in data.iterrows() %}
-            {% if i>0 %}:
-                <span>row: {{ i }} column: {{ row['x1'] }} {{ row['x2'] }} {{ row['x3'] }} {{ row['x4'] }}</span><br>
-            {% else %}
-                <span>importing...</span><br>
-            {% endif %}
-        {% endfor %}
+    <div class="content-section">
+          {{ form.hidden_tag() }}
+          <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Connect to DB</legend>
+            <div class="form-group">
+                {% for i, row in data.iterrows() %}
+                    {% if i>0 %}:
+                        <span>row: {{ i }} {{ row[0] }}, {{ row[1] }}, {{ row[2] }}, {{ row[3] }}, {{ row[4] }}, {{ row[5] }}, {{ row[6] }}, {{ row[7] }}, {{ row[8] }}, {{ row[9] }}</span><br>
+                    {% else %}
+                        <span>importing...</span><br>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <br>
+            <div class="form-group">
+              {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+          </fieldset>
+        </form>
     </div>
 {% endblock content %}
 

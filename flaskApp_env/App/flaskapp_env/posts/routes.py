@@ -2,7 +2,7 @@ from flask import flash, redirect, render_template, url_for, request, abort, Blu
 from flask_login import current_user, login_required
 from flaskapp_env import db
 from flaskapp_env.posts.forms import PostForm
-from flaskapp_env.modules import Post
+from flaskapp_env.modules_TIA import Post
 
 posts = Blueprint('posts', __name__)
 

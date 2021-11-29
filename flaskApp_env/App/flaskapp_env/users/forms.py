@@ -4,7 +4,7 @@ from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, FieldList, FormField
 from wtforms.fields.core import IntegerField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from flaskapp_env.modules import Member
+from flaskapp_env.modules_TIA import Member 
 
 class RegistrationForm(FlaskForm):
     username = StringField('username', 
@@ -20,12 +20,12 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
-        member = Member.query.filter_by(username=username.data,activate=1).first()
+        member = Member.query.filter_by(Name=username.data,Activate=1).first()
         if member:
             raise ValidationError('That username is taken. Please choose a different one.')
 
     def validate_email(self, email):
-        member = Member.query.filter_by(email=email.data,activate=1).first()
+        member = Member.query.filter_by(Email1=email.data,Activate=1).first()
         if member:
             raise ValidationError('That email is taken. Please choose a different one.')
 
@@ -38,7 +38,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class UpdateAccountForm(FlaskForm):
-    username = StringField('username', 
+    username = StringField('Name', 
                         validators=[DataRequired(), Length(min=8, max=20)])
     email = StringField('Email', render_kw={'readonly': True} ,
                         validators=[DataRequired(), Email()])
@@ -48,14 +48,14 @@ class UpdateAccountForm(FlaskForm):
     submit = SubmitField('Update')
 
     def validate_username(self, username):
-        if username.data != current_user.username:
-            member = Member.query.filter_by(username=username.data).first()
+        if username.data != current_user.Name:
+            member = Member.query.filter_by(Name=username.data).first()
             if member:
                 raise ValidationError('That username is taken. Please choose a different one.')
 
     def validate_email(self, email):
-        if email.data != current_user.email:
-            member = Member.query.filter_by(email=email.data).first()
+        if email.data != current_user.Email1:
+            member = Member.query.filter_by(Email1=email.data).first()
             if member:
                 raise ValidationError('That email is taken. Please choose a different one.')
 
@@ -65,7 +65,7 @@ class RequestResetForm(FlaskForm):
     submit = SubmitField('Request Password Reset')
 
     def validate_email(self, email):
-        member = Member.query.filter_by(email=email.data).first()
+        member = Member.query.filter_by(Email1=email.data).first()
         if member is None:
             raise ValidationError('There is no account with that email. You must register first.')
 
@@ -79,3 +79,9 @@ class ResetPasswordForm(FlaskForm):
 class AccountVerifiForm(FlaskForm):
     submit = SubmitField('Sumit Account Verification')
 
+class UploadFileForm(FlaskForm):
+    csvfile = FileField('Udate CSV File', validators=[FileAllowed(['csv'])])
+    upload = SubmitField('Upload')
+
+class UploadFileToDBForm(FlaskForm):
+    submit = SubmitField('Uploading to DB')

@@ -28,26 +28,25 @@ def send_reset_email(user):
 
     msg = Message('Password Reset Request', 
                 sender='noreply@demo.com', 
-                cc = [user.email],
+                cc = [user.Email1],
                 reply_to = 'emilyichan3@gmail.com')
 #     msg.body = f'''To reset your password, click the following link:
 # {url_for('users.reset_token',token=token, _external=True)}
 
 # If you did not make this request then simply ignor this email and no changes will be made.
 # '''
-    msg.html = render_template('/mails/reset-password.html', username=user.username, token=token)
-    
-    with current_app.open_resource("Evidence_Detailed-relationship-history-timeline.pdf") as fp:  
-        msg.attach("Evidence_Detailed-relationship-history-timeline.pdf", "application/pdf", fp.read())  
-
+    msg.html = render_template('/mails/reset-password.html', username=user.Name, token=token)
+    direct_path = os.path.join(current_app.root_path, 'static\\attachment','TEST1.pdf')
+    with current_app.open_resource(direct_path) as fp:  
+        msg.attach("TEST1.pdf", "static/attachment", fp.read())  
     mail.send(msg)
 
 def send_account_verification(user):
     token = user.get_activate_token()
     msg = Message('Account verification Request', 
                 sender='noreply@demo.com', 
-                recipients=[user.email],
-                cc = [user.email])
+                recipients=[user.Email1],
+                cc = [user.Email1])
     msg.body = f'''If you want to activate account in CookLab.com, click the following link:
 {url_for('users.activate_account',token=token, _external=True)}
 
@@ -63,9 +62,9 @@ def upload_csv_file(uploaded_file):
 
 def parseCSV(filePath):
     # CVS Column Names
-    col_names = ['x1','x2','x3','x4']
+    col_names = ['Date','Period','Name','Directory']
     # Use Pandas to parse the CSV file
-    csvData = pd.read_csv(filePath,names=col_names, header=None)
+    csvData = pd.read_csv(filePath)
     # Loop through the Rows
     return csvData
 #   for i,row in csvData.iterrows():
