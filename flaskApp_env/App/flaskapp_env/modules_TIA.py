@@ -83,3 +83,16 @@ class Membership(db.Model):
 
     def __repr__(self):
         return f"Country('{self.id}', '{self.MembershipName}')"
+
+class Term(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    Term = db.Column(db.String(6), nullable=False)
+    Description = db.Column(db.String(200), nullable=False)
+    Member_Pre = db.Column(db.String(6), nullable=False)
+    Member_NextSeq = db.Column(db.Integer, default=1)
+    ValidDateFm = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    ValidDateTo = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    Name = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return f"Term('{self.Term}', '{self.Description}')"

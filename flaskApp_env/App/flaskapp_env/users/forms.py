@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationE
 from flaskapp_env.modules_TIA import Member 
 
 class RegistrationForm(FlaskForm):
-    username = StringField('username', 
+    username = StringField('Username', 
                         validators=[DataRequired(), Length(min=8, max=20)])
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
@@ -38,6 +38,8 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class UpdateAccountForm(FlaskForm):
+    memberid = StringField('Member ID', render_kw={'readonly': True} ,
+                        validators=[DataRequired(), Length(min=8, max=20)])
     username = StringField('Name', 
                         validators=[DataRequired(), Length(min=8, max=20)])
     email = StringField('Email', render_kw={'readonly': True} ,

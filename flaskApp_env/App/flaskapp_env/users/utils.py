@@ -69,3 +69,6 @@ def parseCSV(filePath):
     return csvData
 #   for i,row in csvData.iterrows():
 #       print(i,row['x1'],row['x2'],row['x3'],row['x4'])
+
+
+

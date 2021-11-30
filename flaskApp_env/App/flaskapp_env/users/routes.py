@@ -5,7 +5,8 @@ from flask import flash, redirect, render_template, url_for, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 from werkzeug.datastructures import UpdateDictMixin
 from flaskapp_env import  db, bcrypt
-from flaskapp_env.modules_TIA import Member, Post, Country, Membership
+from flaskapp_env.users.utils_db import get_usable_data
+from flaskapp_env.modules_TIA import (Member, Post, Country, Membership)
 from flaskapp_env.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm
                         , RequestResetForm, ResetPasswordForm, AccountVerifiForm, UploadFileForm
                         , UploadFileToDBForm)
@@ -25,8 +26,9 @@ def register():
     form.membership_type.choices = [(i.ID, i.MembershipName) for i in membership_type]  
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        member = Member(Member_ID='TIATEST001',
-                        Period='202106',
+        _memberid, _period = get_usable_data(4)
+        member = Member(Member_ID=_memberid,
+                        Period=_period,
                         Name=form.username.data,
                         MainMemberId='',
                         MembershipType=form.membership_type.data,
@@ -88,6 +90,7 @@ def account():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
             current_user.Image_file = picture_file
+        current_user.Member_ID = form.memberid.data
         current_user.Name = form.username.data
         current_user.Email1 = form.email.data
         current_user.NationalCode = form.country_code.data
@@ -98,6 +101,7 @@ def account():
     elif request.method == 'GET':
         form.username.data = current_user.Name
         # form.XXXX 指label，內容的話要.data
+        form.memberid.data = current_user.Member_ID
         form.email.data = current_user.Email1
         form.country_code.data = current_user.NationalCode
         form.membership_type.data = current_user.MembershipType
@@ -185,3 +189,4 @@ def data():
     #     #     for row in csvfile:
     #     #         data.append(row)
     return render_template('data.html', data=data)
+
