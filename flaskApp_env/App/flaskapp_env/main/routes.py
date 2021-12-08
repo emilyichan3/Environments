@@ -1,6 +1,5 @@
 from flask import render_template, request, Blueprint
 from flaskapp_env.modules_TIA import Post
-
 main = Blueprint('main', __name__)
 
 @main.route('/')
@@ -13,3 +12,5 @@ def home():
 @main.route('/about')
 def about():
     return render_template('about.html', title='About')
+
+

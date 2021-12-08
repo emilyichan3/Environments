@@ -1,7 +1,7 @@
 from flask import flash, redirect, render_template, url_for, request, abort, Blueprint
 from flask_login import current_user, login_required
 from flaskapp_env import db
-from flaskapp_env.posts.forms import PostForm
+from flaskapp_env.posts.forms import PostForm, SearchForm
 from flaskapp_env.modules_TIA import Post
 
 posts = Blueprint('posts', __name__)
@@ -54,3 +54,24 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been deleted!','success')
     return redirect(url_for('main.home'))
+
+#PASS stuff to Navbar
+@posts.app_context_processor
+def base():
+    form = SearchForm()
+    return dict(form=form)
+    
+@posts.route('/search', methods=["POST"])
+def search():
+     form = SearchForm()
+     posts = Post.query
+     if form.validate_on_submit():
+        page = request.args.get('page',1, type=int)
+        post.searched = form.searched.data
+        posts = posts.filter(Post.post_content.like('%' + post.searched + '%'))
+        posts = posts.order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
+        
+        return render_template("search.html", 
+                form=form, 
+                searched=post.searched,
+                posts = posts)

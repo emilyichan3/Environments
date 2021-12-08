@@ -1,13 +1,13 @@
 import pandas as pd
 import csv
 from datetime import date
-from flask import flash, redirect, render_template, url_for, request, Blueprint
+from flask import app, flash, redirect, render_template, url_for, request, Blueprint, jsonify
 from flask_login import login_user, current_user, logout_user, login_required
 from werkzeug.datastructures import UpdateDictMixin
 from flaskapp_env import  db, bcrypt
 from flaskapp_env.users.utils_db import get_usable_data
 from flaskapp_env.modules_TIA import (Member, Post, Country, Membership)
-from flaskapp_env.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm
+from flaskapp_env.users.forms import (AdminForm, MemberListForm, RegistrationForm, LoginForm, UpdateAccountForm
                         , RequestResetForm, ResetPasswordForm, AccountVerifiForm, UploadFileForm
                         , UploadFileToDBForm)
 from flaskapp_env.users.utils import (save_picture, send_reset_email, send_account_verification
@@ -190,3 +190,17 @@ def data():
     #     #         data.append(row)
     return render_template('data.html', data=data)
 
+@users.route('/admin')
+@login_required
+def admin():
+    form = AdminForm()
+    if current_user.is_authenticated:
+        return render_template('admin.html', form=form)
+
+@users.route('/admin/member')
+@login_required
+def members():
+    form = MemberListForm()
+    if current_user.is_authenticated:
+        members = Member.query.filter().all()
+        return render_template('member_list.html', form=form, members=members)

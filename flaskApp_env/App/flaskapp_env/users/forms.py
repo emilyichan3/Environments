@@ -87,3 +87,10 @@ class UploadFileForm(FlaskForm):
 
 class UploadFileToDBForm(FlaskForm):
     submit = SubmitField('Uploading to DB')
+
+class AdminForm(FlaskForm):
+    submit = SubmitField('Sumit')
+
+class MemberListForm(FlaskForm):
+    submit = SubmitField('Sumit')
+
