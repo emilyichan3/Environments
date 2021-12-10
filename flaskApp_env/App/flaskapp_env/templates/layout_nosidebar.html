@@ -12,14 +12,14 @@
     {% if title %}
         <title>Taiwan Ireland lab - {{ title }}</title>
     {% else %}
-        <title>Taiwan Ireland  lab</title>
+        <title>Taiwan Ireland lab</title>
     {% endif%}
 </head>
 <body>
     <header class="site-header">
         <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
           <div class="container">
-            <a class="navbar-brand mr-4" href="/">Cook Blog</a>
+            <a class="navbar-brand mr-4" href="/">Taiwanese Cuisine</a>
               <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
@@ -53,7 +53,7 @@
     </header>
     <main role="main" class="container">
         <div class="row">
-          <div class="col-md-8">
+          <div class="col-md-8"> 
             {% with messages = get_flashed_messages(with_categories=true) %}
               {% if messages %}
                 {% for category, message in messages %}
@@ -63,8 +63,8 @@
                 {% endfor %}
               {% endif %}
             {% endwith %}
-            {% block content %}{% endblock %}
           </div>
+          {% block content %}{% endblock %}
         </div>
       </main>
     <!-- Optional JavaScript; choose one of the two! -->
